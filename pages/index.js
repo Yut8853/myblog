@@ -3,61 +3,46 @@ import Image from 'next/image'
 import { Inter } from '@next/font/google'
 import styles from '../styles/Home.module.css'
 import Link from 'next/link'
-import Layout from '../components/Layout'
+import Layout, {siteTitle } from '../components/Layout'
 import utilStyle from '../styles/utils.module.css'
+import { getPostsData } from '../lib/post'
 
-const inter = Inter({ subsets: ['latin'] })
+export async function getStaticProps() {
+  const allPostsData = getPostsData() //ID,Title,data....
 
-export default function Home() {
+  return {
+    props: {
+      allPostsData,
+    },
+  }
+}
+
+export default function Home({allPostsData}) {
   return (
     <>
-      <Layout>
+      <Layout home>
+        <Head>
+          <title>{ siteTitle }</title>
+        </Head>
         <section className={utilStyle.headingMd}>
           <p>React/Next.js学習中！作ってて楽しいです。</p>
         </section>
         <section className={`${utilStyle.headingMd} ${utilStyle.padding1px}`}>
           <h2>🗒エンジニアのブログ</h2>
           <div className={styles.grid}>
-            <article>
-              <Link href='/'>
-                <img src='/images/thumbnail01.jpg' className={ styles.thumbnailImage} />
-              </Link>
-              <Link href='/' className={utilStyle.boldText}>
-                タイトル０１
-              </Link>
-              <br />
-              <small className={utilStyle.lightText}>Febrary 23, 2022</small>
-            </article>
-            <article>
-              <Link href='/'>
-                <img src='/images/thumbnail01.jpg' className={ styles.thumbnailImage} />
-              </Link>
-              <Link href='/' className={utilStyle.boldText}>
-                タイトル０１
-              </Link>
-              <br />
-              <small className={utilStyle.lightText}>Febrary 23, 2022</small>
-            </article>
-            <article>
-              <Link href='/'>
-                <img src='/images/thumbnail01.jpg' className={ styles.thumbnailImage} />
-              </Link>
-              <Link href='/' className={utilStyle.boldText}>
-                タイトル０１
-              </Link>
-              <br />
-              <small className={utilStyle.lightText}>Febrary 23, 2022</small>
-            </article>
-            <article>
-              <Link href='/'>
-                <img src='/images/thumbnail01.jpg' className={ styles.thumbnailImage} />
-              </Link>
-              <Link href='/' className={utilStyle.boldText}>
-                タイトル０１
-              </Link>
-              <br />
-              <small className={utilStyle.lightText}>Febrary 23, 2022</small>
-            </article>
+            {allPostsData.map(({ id, title, date, thumbnail }) => ( 
+              <article key={id}>
+                <Link href={`./posts/${id}`}>
+                  <img src={`${thumbnail}`} className={ styles.thumbnailImage} />
+                </Link>
+                <Link href={`./posts/${id}`} className={utilStyle.boldText}>
+                  <p className={utilStyle.boldText}>{title}</p>
+                </Link>
+                <br />
+                <small className={utilStyle.lightText}>{date}</small>
+              </article>
+            ))}
+
           </div>
         </section>
       </Layout>
